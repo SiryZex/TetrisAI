@@ -7,7 +7,7 @@ BG_COLOR = (45, 45, 45)
 FIELD_COLOR = (211, 211, 211)
 
 SPRITE_DIR_PATH = 'assets/sprites'
-FONT_PATH = 'assets/font/FREAKSOFNATUREMASSIVE.ttf'
+FONT_PATH = 'assets/font/ALUMNISANS.ttf'
 
 ANIM_TIME_INTERVAL = 150  # milliseconds
 FAST_ANIM_TIME_INTERVAL = 15
