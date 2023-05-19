@@ -52,7 +52,7 @@ class Block(pg.sprite.Sprite):
 
     def is_collide(self, pos):
         x, y = int(pos.x), int(pos.y)
-        if 0 <= x < FIELD_W and y < FIELD_H and (
+        if 0 <= x < COLS and y < ROWS and (
                 y < 0 or not self.tetromino.tetris.field_array[y][x]):
             return False
         return True

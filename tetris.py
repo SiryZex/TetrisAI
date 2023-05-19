@@ -20,18 +20,18 @@ class Tetris:
         self.full_lines = 0
 
     def check_full_lines(self):
-        row = FIELD_H - 1
-        for y in range(FIELD_H - 1, -1, -1):
-            for x in range(FIELD_W):
+        row = COLS - 1
+        for y in range(COLS - 1, -1, -1):
+            for x in range(COLS):
                 self.field_array[row][x] = self.field_array[y][x]
 
                 if self.field_array[y][x]:
                     self.field_array[row][x].pos = vec(x, y)
 
-            if sum(map(bool, self.field_array[y])) < FIELD_W:
+            if sum(map(bool, self.field_array[y])) < COLS:
                 row -= 1
             else:
-                for x in range(FIELD_W):
+                for x in range(COLS):
                     self.field_array[row][x].alive = False
                     self.field_array[row][x] = 0
 
@@ -43,7 +43,7 @@ class Tetris:
             self.field_array[y][x] = block
 
     def get_field_array(self):
-        return [[0 for x in range(FIELD_W)] for y in range(FIELD_H)]
+        return [[0 for x in range(COLS)] for y in range(COLS)]
 
     def is_game_over(self):
         if self.tetromino.blocks[0].pos.y == INIT_POS_OFFSET[1]:
@@ -72,8 +72,8 @@ class Tetris:
             self.speed_up = True
 
     def draw_grid(self):
-        for x in range(FIELD_W):
-            for y in range(FIELD_H):
+        for x in range(COLS):
+            for y in range(COLS):
                 pg.draw.rect(self.app.screen, 'black',
                              (x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE), 1)
 
