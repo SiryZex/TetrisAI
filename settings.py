@@ -1,28 +1,23 @@
 import pygame as pg
+from copy import deepcopy
 
 vec = pg.math.Vector2
-
+BG_COLOR = (45, 45, 45)
 FIELD_COLOR = (211, 211, 211)
 
-SPRITE_DIR_PATH = 'assets/sprites'
 FONT_PATH = 'assets/font/ALUMNISANS.ttf'
-
-ANIM_TIME_INTERVAL = 150  # milliseconds
-FAST_ANIM_TIME_INTERVAL = 15
 
 TILE_SIZE = 35
 
-FIELD_SIZE = COLS, ROWS = 10, 22
+COLS, ROWS = 10, 22
 FIELD_RES = COLS * TILE_SIZE, ROWS * TILE_SIZE
 
 FIELD_SCALE_W, FIELD_SCALE_H = 1.7, 1.0
 WIN_RES = WIN_W, WIN_H = FIELD_RES[0] * FIELD_SCALE_W, FIELD_RES[1] * FIELD_SCALE_H
-
-INIT_POS_OFFSET = vec(COLS // 2 - 1, 0)
 NEXT_POS_OFFSET = vec(COLS * 1.2, ROWS * 0.45)
 
-MAX_FPS = 60
-DROP_TIME = 20
+MAX_FPS = 30
+DROP_TIME = 120
 DRAW = True
 
 COLORS = [
@@ -58,3 +53,31 @@ TETROMINOES = [
 	[[7, 7],
 	 [7, 7]]
 ]
+
+def rotate_clockwise(shape):
+	return [ [ shape[y][x]
+		for y in range(len(shape)) ]
+		for x in range(len(shape[0])-1, -1, -1) ]
+
+def check_collision(board, shape, offset):
+	off_x, off_y = offset
+	for cy, row in enumerate(shape):
+		for cx, cell in enumerate(row):
+			try:
+				if cell and board[cy + off_y][cx + off_x]:
+					return True
+			except IndexError:
+				return True
+	return False
+
+def remove_row(board, row):
+	del board[row]
+	return [[0 for i in range(COLS)]] + board
+	
+def join_matrices(mat1, mat2, mat2_off):
+	mat3 = deepcopy(mat1)
+	off_x, off_y = mat2_off
+	for cy, row in enumerate(mat2):
+		for cx, val in enumerate(row):
+			mat3[cy+off_y-1][cx+off_x] += val
+	return mat3
