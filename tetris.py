@@ -72,26 +72,18 @@ class TetrisApp(object):
 		self.width = TILE_SIZE * (COLS+10)
 		self.height = TILE_SIZE * ROWS
 		self.rlim = TILE_SIZE * COLS
-		self.bground_grid = [[ 8 if x%2==y%2 else 0 for x in range(COLS)] for y in range(ROWS)]
 		self.default_font = pg.font.Font(pg.font.get_default_font(), 11)
 		self.screen = pg.display.set_mode(WIN_RES)
-		self.next_tetromino = TETROMINOS[randrange(len(TETROMINOS))]
+		self.next_tetromino = TETROMINOES[randrange(len(TETROMINOES))]
 		self.gameover = False
-		self.images = self.load_images()
 		self.runner = runner
 		self.ai = None
 		self.lock = Lock()
 		self.init_game()
-  
-	def load_images(self):
-		files = [item for item in pathlib.Path(SPRITE_DIR_PATH).rglob('*.png') if item.is_file()]
-		images = [pg.image.load(file).convert_alpha() for file in files]
-		images = [pg.transform.scale(image, (TILE_SIZE, TILE_SIZE)) for image in images]
-		return images
 	
 	def new_tetromino(self):
 		self.tetromino = self.next_tetromino
-		self.next_tetromino = TETROMINOS[randrange(len(TETROMINOS))]
+		self.next_tetromino = TETROMINOES[randrange(len(TETROMINOES))]
 		self.tetromino_x = COLS//2 - len(self.tetromino[0])//2
 		self.tetromino_y = 0
 		self.score += 1

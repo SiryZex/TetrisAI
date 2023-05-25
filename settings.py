@@ -1,7 +1,7 @@
 import pygame as pg
 
 vec = pg.math.Vector2
-BG_COLOR = (45, 45, 45)
+
 FIELD_COLOR = (211, 211, 211)
 
 SPRITE_DIR_PATH = 'assets/sprites'
@@ -20,17 +20,6 @@ WIN_RES = WIN_W, WIN_H = FIELD_RES[0] * FIELD_SCALE_W, FIELD_RES[1] * FIELD_SCAL
 
 INIT_POS_OFFSET = vec(COLS // 2 - 1, 0)
 NEXT_POS_OFFSET = vec(COLS * 1.2, ROWS * 0.45)
-MOVE_DIRECTIONS = {'left': vec(-1, 0), 'right': vec(1, 0), 'down': vec(0, 1)}
-
-TETROMINOES = {
-    'T': [(0, 0), (-1, 0), (1, 0), (0, -1)],
-    'O': [(0, 0), (0, -1), (1, 0), (1, -1)],
-    'J': [(0, 0), (-1, 0), (0, -1), (0, -2)],
-    'L': [(0, 0), (1, 0), (0, -1), (0, -2)],
-    'I': [(0, 0), (0, 1), (0, -1), (0, -2)],
-    'S': [(0, 0), (-1, 0), (0, -1), (1, -1)],
-    'Z': [(0, 0), (1, 0), (0, -1), (-1, -1)]
-}
 
 MAX_FPS = 60
 DROP_TIME = 20
@@ -48,7 +37,7 @@ COLORS = [
 	(35,  35,  35) 
 ]
 
-TETROMINOS = [
+TETROMINOES = [
 	[[1, 1, 1],
 	 [0, 1, 0]],
 	
