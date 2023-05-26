@@ -61,7 +61,7 @@ class AI(object):
 		return max(self.all_possible_moves(), key=lambda m: self.utility(m.result))		
 
 	def make_move(self):
-		"""Move the current tetromino to the desired position by modifying TetrisApp's state"""
+		"""Move the current tetromino to the desired position by modifying Tetris's state"""
 		tetris = self.tetris
 
 		move = self.best_move()

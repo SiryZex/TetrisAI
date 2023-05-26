@@ -5,7 +5,7 @@
 # crossover = pick attributes from parents randomly/average attributes/others
 # mutation = assign random value/random variance
 
-from tetris import TetrisApp
+from tetris import Tetris
 from ai import AI
 from random import randrange, randint
 import random
@@ -50,7 +50,7 @@ class Chromosome(object):
 
 class GeneticAlgorithms(object):
 	def __init__(self):
-		self.app = TetrisApp(self)
+		self.app = Tetris(self)
 		self.ai = AI(self.app)
 		self.app.ai = self.ai
 		self.population = [self.random_chromosome() for _ in range(POPULATION_SIZE)]

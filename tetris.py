@@ -30,7 +30,7 @@ def new_board():
 	board += [[1 for x in range(COLS)]]
 	return board
 
-class TetrisApp(object):
+class Tetris(object):
 	def __init__(self, runner=None):
 		self.DROPEVENT = pg.USEREVENT + 1
 
@@ -41,7 +41,6 @@ class TetrisApp(object):
 		self.sprite_group = pg.sprite.Group()
 		self.width = TILE_SIZE * (COLS+10)
 		self.height = TILE_SIZE * ROWS
-		self.rlim = TILE_SIZE * COLS
 		self.default_font = pg.font.Font(pg.font.get_default_font(), 11)
 		self.screen = pg.display.set_mode(WIN_RES)
 		self.next_tetromino = TETROMINOES[randrange(len(TETROMINOES))]
@@ -130,6 +129,15 @@ class TetrisApp(object):
 		if self.gameover:
 			self.init_game()
 			self.gameover = False
+   
+	def center_msg(self, score):
+		self.screen.fill(BG_COLOR)
+		self.text.font.render_to(self.screen, (WIN_W * 0.38, WIN_H * 0.38),
+            text='Game Over!', fgcolor='red', size=TILE_SIZE, bgcolor=(45, 45, 45))
+		self.text.font.render_to(self.screen, (WIN_W * 0.33, WIN_H * 0.48),
+            text='Your score: %d' % score, fgcolor='red', size=TILE_SIZE, bgcolor=(45, 45, 45))
+		self.text.font.render_to(self.screen, (WIN_W * 0.26, WIN_H * 0.58),
+            text='Press space to continue', fgcolor='red', size=TILE_SIZE, bgcolor=(45, 45, 45))
 
 	def run(self):
 		key_actions = {
@@ -143,7 +151,7 @@ class TetrisApp(object):
 				self.screen.fill(BG_COLOR)
 				self.screen.fill(color=FIELD_COLOR, rect=(0, 0, *FIELD_RES))
 				if self.gameover:
-					self.center_msg("Game Over!\nYour score: %d\nPress space to continue" % self.score)
+					self.center_msg(self.score)
 				else:
 					self.text.draw()
 					self.draw_grid()
@@ -166,7 +174,7 @@ class TetrisApp(object):
 
 if __name__ == "__main__":
 	from ai import AI
-	app = TetrisApp()
+	app = Tetris()
 	app.ai = AI(app)
 	app.ai.instant_play = False
 	app.run()
