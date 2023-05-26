@@ -4,25 +4,23 @@ from collections import namedtuple
 
 Move = namedtuple('Move', ['x_pos', 'rotation', 'result'])
 
-class AI(object):
+class NeuralNetwork(object):
 	def __init__(self, tetris):
 		self.tetris = tetris
 		self.heuristics = {
-			heuristic.num_holes: -496,
-			heuristic.num_blocks_above_holes: 897,
-			heuristic.num_gaps: -19,
-			heuristic.max_height: -910,
-			heuristic.avg_height: -747,
-			heuristic.num_blocks: 174,
+			heuristic.num_holes: -364,
+			heuristic.num_tetrominoes: 123,
+			heuristic.max_height: -865,
+			heuristic.avg_height: -533,
+			heuristic.num_tetrominoes_above_holes: 475,
+			heuristic.num_gaps: -23,			
 		}
 		self.instant_play = True
 
 	def board_with_tetromino(self, x, y, tetromino):
-		"""Return new board with tetromino included"""
 		return join_matrices(self.tetris.board, tetromino, (x, y))
 
 	def intersection_point(self, x, tetromino):
-		"""Find the y coordinate closest to the top where tetromino will collide"""
 		y = 0
 		while not check_collision(self.tetris.board, tetromino, (x, y)):
 			y += 1
@@ -30,12 +28,10 @@ class AI(object):
 
 	@staticmethod
 	def max_x_pos_for_tetromino(tetromino):
-		"""The furthest position you can move tetromino to the right"""
 		return COLS - len(tetromino[0])
 
 	@staticmethod
 	def num_rotations(tetromino):
-		"""The number of unique rotated positions of tetromino"""
 		tetrominos = [tetromino]
 		while True:
 			tetromino = rotate_clockwise(tetromino)
@@ -49,7 +45,7 @@ class AI(object):
 	def all_possible_moves(self):
 		moves = []
 		tetromino = self.tetris.tetromino
-		for r in range(AI.num_rotations(tetromino)):
+		for r in range(NeuralNetwork.num_rotations(tetromino)):
 			for x in range(self.max_x_pos_for_tetromino(tetromino)+1):
 				y = self.intersection_point(x, tetromino)
 				board = self.board_with_tetromino(x, y, tetromino)
@@ -61,7 +57,6 @@ class AI(object):
 		return max(self.all_possible_moves(), key=lambda m: self.utility(m.result))		
 
 	def make_move(self):
-		"""Move the current tetromino to the desired position by modifying Tetris's state"""
 		tetris = self.tetris
 
 		move = self.best_move()

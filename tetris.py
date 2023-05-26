@@ -46,7 +46,7 @@ class Tetris(object):
 		self.next_tetromino = TETROMINOES[randrange(len(TETROMINOES))]
 		self.gameover = False
 		self.runner = runner
-		self.ai = None
+		self.neural_network = None
 		self.lock = Lock()
 		self.init_game()
 	
@@ -60,7 +60,7 @@ class Tetris(object):
 		if check_collision(self.board, self.tetromino, (self.tetromino_x, self.tetromino_y)):
 			self.gameover = True
 			if self.runner:
-				self.runner.on_game_over(self.score)
+				self.runner.game_over(self.score)
 
 	def init_game(self):
 		self.board = new_board()
@@ -113,13 +113,13 @@ class Tetris(object):
 				cleared_rows = 0
 				for i, row in enumerate(self.board[:-1]):
 					if 0 not in row:
-						self.board = remove_row(self.board, i)
+						self.board = remove_full_line(self.board, i)
 						cleared_rows += 1
 				self.add_cl_lines(cleared_rows)
 
 				self.lock.release()				
-				if self.ai:
-					self.ai.make_move()
+				if self.neural_network:
+					self.neural_network.make_move()
 
 				return True
 		self.lock.release()
@@ -173,8 +173,8 @@ class Tetris(object):
 			clock.tick(MAX_FPS)
 
 if __name__ == "__main__":
-	from ai import AI
+	from neural_network import NeuralNetwork
 	app = Tetris()
-	app.ai = AI(app)
-	app.ai.instant_play = False
+	app.neural_network = NeuralNetwork(app)
+	app.neural_network.instant_play = False
 	app.run()

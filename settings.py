@@ -1,5 +1,6 @@
 import pygame as pg
 from copy import deepcopy
+from enum import Enum
 
 vec = pg.math.Vector2
 BG_COLOR = (45, 45, 45)
@@ -8,10 +9,8 @@ FIELD_COLOR = (211, 211, 211)
 FONT_PATH = 'assets/font/ALUMNISANS.ttf'
 
 TILE_SIZE = 35
-
 COLS, ROWS = 10, 22
 FIELD_RES = COLS * TILE_SIZE, ROWS * TILE_SIZE
-
 FIELD_SCALE_W, FIELD_SCALE_H = 1.7, 1.0
 WIN_RES = WIN_W, WIN_H = FIELD_RES[0] * FIELD_SCALE_W, FIELD_RES[1] * FIELD_SCALE_H
 NEXT_POS_OFFSET = vec(COLS * 1.2, ROWS * 0.45)
@@ -70,14 +69,31 @@ def check_collision(board, shape, offset):
 				return True
 	return False
 
-def remove_row(board, row):
+def remove_full_line(board, row):
 	del board[row]
 	return [[0 for i in range(COLS)]] + board
 	
-def join_matrices(mat1, mat2, mat2_off):
-	mat3 = deepcopy(mat1)
-	off_x, off_y = mat2_off
-	for cy, row in enumerate(mat2):
+def join_matrices(matrix1, matrix2, matrix2_off):
+	matrix3 = deepcopy(matrix1)
+	off_x, off_y = matrix2_off
+	for cy, row in enumerate(matrix2):
 		for cx, val in enumerate(row):
-			mat3[cy+off_y-1][cx+off_x] += val
-	return mat3
+			matrix3[cy+off_y-1][cx+off_x] += val
+	return matrix3
+
+class SelectionMethod(Enum):
+	roulette = 1
+ 
+class CrossoverMethod(Enum):
+	random_attributes = 1
+	average_attributes = 2
+
+POPULATION_SIZE = 20
+GAMES_TO_AVG = 2
+SURVIVORS_PER_GENERATION = 6 # crossover probability = NEWBORNS / POPULATION_SIZE
+NEWBORNS_PER_GENERATION = POPULATION_SIZE - SURVIVORS_PER_GENERATION
+SELECTION_METHOD = SelectionMethod.roulette
+CROSSOVER_METHOD = CrossoverMethod.random_attributes
+MUTATION_PASSES = 3
+MUTATION_RATE = 20 # mutation probability for a given chromosome is MUTATION_PASSES / MUTATION_RATE
+CONVERGED_THRESHOLD = 15

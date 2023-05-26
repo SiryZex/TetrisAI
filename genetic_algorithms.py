@@ -1,34 +1,9 @@
-# chromosome = heuristics dictionary
-# populations = [chromosome]
-# fitness function = score/lines
-# selection = top X (elitism)/tournament/roulette/others
-# crossover = pick attributes from parents randomly/average attributes/others
-# mutation = assign random value/random variance
-
 from tetris import Tetris
-from ai import AI
+from neural_network import NeuralNetwork
 from random import randrange, randint
 import random
 import sys
-from enum import Enum
-
-class SelectionMethod(Enum):
-	roulette = 1
-
-class CrossoverMethod(Enum):
-	random_attributes = 1
-	average_attributes = 2
-
-# Config
-POPULATION_SIZE = 20
-GAMES_TO_AVG = 2
-SURVIVORS_PER_GENERATION = 6 # crossover probability = NEWBORNS / POPULATION_SIZE
-NEWBORNS_PER_GENERATION = POPULATION_SIZE - SURVIVORS_PER_GENERATION
-SELECTION_METHOD = SelectionMethod.roulette
-CROSSOVER_METHOD = CrossoverMethod.random_attributes
-MUTATION_PASSES = 3
-MUTATION_RATE = 20 # mutation probability for a given chromosome is MUTATION_PASSES / MUTATION_RATE
-CONVERGED_THRESHOLD = 15
+from settings import *
 
 def __generate_name():
 	current_name = 1
@@ -37,6 +12,7 @@ def __generate_name():
 		current_name += 1
 _generate_name = __generate_name()
 
+# chromosome = heuristics dictionary
 class Chromosome(object):
 	def __init__(self, heuristics):
 		self.name = next(_generate_name)
@@ -47,16 +23,15 @@ class Chromosome(object):
 	def avg_fitness(self):
 		return self.total_fitness / self.games
 
-
 class GeneticAlgorithms(object):
 	def __init__(self):
 		self.app = Tetris(self)
-		self.ai = AI(self.app)
-		self.app.ai = self.ai
+		self.neural_network = NeuralNetwork(self.app)
+		self.app.neural_network = self.neural_network
 		self.population = [self.random_chromosome() for _ in range(POPULATION_SIZE)]
 		self.current_chromosome = 0
 		self.current_generation = 1
-		self.ai.heuristics = self.population[self.current_chromosome].heuristics
+		self.neural_network.heuristics = self.population[self.current_chromosome].heuristics
 
 	def run(self):
 		self.app.run()
@@ -66,9 +41,9 @@ class GeneticAlgorithms(object):
 		if self.current_chromosome >= POPULATION_SIZE:
 			self.current_chromosome = 0
 			self.next_generation()
-		self.ai.heuristics = self.population[self.current_chromosome].heuristics
+		self.neural_network.heuristics = self.population[self.current_chromosome].heuristics
 	
-	def on_game_over(self, score):
+	def game_over(self, score):
 		chromosome = self.population[self.current_chromosome]
 		chromosome.games += 1
 		chromosome.total_fitness += score
@@ -76,38 +51,23 @@ class GeneticAlgorithms(object):
 			self.next_ai()
 		self.app.start_game()
 
-	def population_has_converged(self):
+	def population_converged(self):
 		t = CONVERGED_THRESHOLD
 		pop = self.population
 		return all(all(pop[0].heuristics[f]-t < w < pop[0].heuristics[f]+t for f, w in c.heuristics.items()) for c in pop)
 
 	def next_generation(self):
-		print("__________________\n")
-		if self.population_has_converged():
-			print("Population has converged on generation %s.\n values: %s" 
-				% (self.current_generation, [(f.__name__, w) for f, w in self.population[0].heuristics.items()]))
+		if self.population_converged():
 			sys.exit()
-		print("GENERATION %s COMPLETE" % self.current_generation)
-		print("AVG FITNESS", sum([c.avg_fitness() for c in self.population]) / POPULATION_SIZE)
 		self.current_generation += 1
-		for c in self.population:
-			print("chromosome", c.name, "fitness", c.avg_fitness())
-		best_chromosome = max(self.population, key=lambda c: c.avg_fitness())
-		print("Fittest chromosome:", best_chromosome.name, "fitness", best_chromosome.avg_fitness(), "\n%s" % [(f.__name__, w) for f, w in best_chromosome.heuristics.items()])
-
-		print("\nEVOLUTION")
 		new_population = self.selection(SURVIVORS_PER_GENERATION, SELECTION_METHOD)
-		for c in new_population:
-			print("chromosome", c.name, "fitness", c.avg_fitness(), "SURVIVED")
 		for _ in range(NEWBORNS_PER_GENERATION):
 			parents = self.selection(2, SELECTION_METHOD)
 			new_population.append(self.crossover(parents[0], parents[1], CROSSOVER_METHOD))
-			print(parents[0].name, "and", parents[1].name, "PRODUCED", new_population[-1].name)
 		for _ in range(MUTATION_PASSES):
 			for chromosome in new_population:
 				self.mutation(chromosome, MUTATION_RATE / MUTATION_PASSES)
-		print("__________________\n")
-		assert len(new_population) == len(self.population), "SURVIVORS_PER_GENERATION + NEWBORNS_PER_GENERATION != POPULATION_SIZE"
+		assert len(new_population) == len(self.population)
 		self.population = new_population
 
 	def selection(self, num_selected, method):
@@ -154,7 +114,7 @@ class GeneticAlgorithms(object):
 			print(chromosome.name, "MUTATED")
 
 	def random_chromosome(self):
-		return Chromosome({fun: randrange(-1000, 1000) for fun, weight in self.ai.heuristics.items()})
+		return Chromosome({fun: randrange(-1000, 1000) for fun, weight in self.neural_network.heuristics.items()})
 
 if __name__ == "__main__":	
 	GeneticAlgorithms().run()
